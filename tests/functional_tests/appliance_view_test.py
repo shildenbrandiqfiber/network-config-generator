@@ -4,10 +4,12 @@ This test case verifies the appliance status view (status of the FTP, TFTP, redi
 The following services must run prior starting the tests:
 
  * a local redis server (`$ redis-server`)
- * a celery worker thread (`(venv)$ celery worker -A app.celery --loglevel=debug`)
+ * a celery worker thread (`(venv)$ celery -A app.celery worker --loglevel=debug`)
 
 """
 import time
+
+from selenium.webdriver.common.by import By
 
 from tests import BaseFlaskLiveServerTest
 
@@ -19,7 +21,7 @@ class ApplianceViewTest(BaseFlaskLiveServerTest):
         self.browser.get(self.get_server_url())
 
         # navigate to the
-        self.browser.find_element_by_link_text("Appliance Status").click()
+        self.browser.find_element(By.LINK_TEXT, "Appliance Status").click()
 
         # wait some time
         time.sleep(60)
@@ -34,14 +36,14 @@ class ApplianceViewTest(BaseFlaskLiveServerTest):
         self.assertIn(expected_html, content)
 
         # create a test task
-        self.browser.find_element_by_id("form_a").send_keys("4")
-        self.browser.find_element_by_id("form_b").send_keys("6")
-        self.browser.find_element_by_id("start-job").click()
+        self.browser.find_element(By.ID, "form_a").send_keys("4")
+        self.browser.find_element(By.ID, "form_b").send_keys("6")
+        self.browser.find_element(By.ID, "start-job").click()
         time.sleep(1)
-        self.assertIn("calculating", self.browser.find_element_by_tag_name("body").text)
+        self.assertIn("calculating", self.browser.find_element(By.TAG_NAME, "body").text)
 
         # wait for task to complete
         time.sleep(3)
 
         # verify result
-        self.assertIn("Sum: 10", self.browser.find_element_by_tag_name("body").text)
+        self.assertIn("Sum: 10", self.browser.find_element(By.TAG_NAME, "body").text)

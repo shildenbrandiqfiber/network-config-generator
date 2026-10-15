@@ -1,11 +1,11 @@
 """
 utility function for the appliance
 """
+import socket
 import subprocess
 
-import re
+import psutil
 import redis
-import netifaces as ni
 
 
 def verify_appliance_status():
@@ -21,12 +21,17 @@ def verify_appliance_status():
     }
 
     # assume that the setup script was running on the server, if the ports are open, TFTP and FTP should be available
-    output = subprocess.check_output(["netstat", "-l"]).decode("utf-8")
-    if "*:tftp" in output:
-        result["tftp"] = True
+    try:
+        for conn in psutil.net_connections(kind="inet"):
+            if conn.type == socket.SOCK_DGRAM and conn.laddr.port == 69:
+                result["tftp"] = True
 
-    if "*:ftp" in output:
-        result["ftp"] = True
+            elif conn.type == socket.SOCK_STREAM and conn.status == psutil.CONN_LISTEN and conn.laddr.port == 21:
+                result["ftp"] = True
+
+    except psutil.AccessDenied:
+        # listing the sockets requires root privileges on macOS (not on Linux)
+        pass
 
     # we assume that the redis server is running locally, therefore we can use the CLI to test the connection
     rs = redis.Redis("localhost")
@@ -46,40 +51,15 @@ def verify_appliance_status():
     return result
 
 
-def is_valid_ipv4_address(text):
-    """
-    check if the given text is a valid IPv4 address
-    :param text:
-    :return:
-    """
-    ipv4_regex = '(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4]' \
-                 '[0-9]|25[0-5])'
-
-    if re.match(ipv4_regex, text) is None:
-        return False
-    return True
-
-
 def get_local_ip_addresses():
     """
     returns a dictionary that contains the interface names and the associated IPv4 addresses
     :return:
     """
     result = {}
-    intf_dict = ni.interfaces()
-    for i in intf_dict:
-        a = ni.ifaddresses(i)
-        result[i] = list()
-        for key in a.keys():
-            for entry in a[key]:
-                try:
-                    if is_valid_ipv4_address(entry["addr"]) and (entry["addr"] not in "127.0.0.1"):
-                        result[i].append(entry["addr"])
-
-                except:
-                    # silent ignore
-                    pass
-        if len(result[i]) == 0:
-            del result[i]
+    for intf, addresses in psutil.net_if_addrs().items():
+        ipv4_addresses = [a.address for a in addresses if a.family == socket.AF_INET and a.address != "127.0.0.1"]
+        if ipv4_addresses:
+            result[intf] = ipv4_addresses
 
     return result

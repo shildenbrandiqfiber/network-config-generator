@@ -42,7 +42,7 @@ def add_config_template(project_id):
     """
     parent_project = Project.query.filter(Project.id == project_id).first_or_404()
 
-    form = ConfigTemplateForm(request.form)
+    form = ConfigTemplateForm()
 
     if form.validate_on_submit():
         try:
@@ -100,7 +100,7 @@ def edit_config_template(project_id, config_template_id):
     parent_project = Project.query.filter(Project.id == project_id).first_or_404()
     config_template = ConfigTemplate.query.filter(ConfigTemplate.id == config_template_id).first_or_404()
 
-    form = ConfigTemplateForm(request.form, config_template)
+    form = ConfigTemplateForm(obj=config_template)
 
     if form.validate_on_submit():
         try:
@@ -163,7 +163,7 @@ def edit_all_config_template_values(project_id, config_template_id):
     Project.query.filter(Project.id == project_id).first_or_404()
     config_template = ConfigTemplate.query.filter(ConfigTemplate.id == config_template_id).first_or_404()
 
-    form = EditConfigTemplateValuesForm(request.form, config_template)
+    form = EditConfigTemplateValuesForm(obj=config_template)
 
     # hostname is defined in every Template Value Set
     variable_list = [

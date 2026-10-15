@@ -1,10 +1,23 @@
 """
 SQLAlchemy data model for the web service
 """
-from slugify.main import Slugify
+from slugify import slugify
 from app import db
 from app.exception import TemplateVariableNotFoundException, TemplateValueNotFoundException
 from app.utils import MakoConfigGenerator
+
+
+def create_slug(string, separator="-"):
+    """create a case-preserving slug of the given string
+
+    The replacements keep the result identical to the previously used awesome-slugify library, which created the
+    variable names and export directory names that are already stored/used.
+
+    :param string:
+    :param separator:
+    :return:
+    """
+    return slugify(string, separator=separator, lowercase=False, replacements=[["'", ""], [",", " "]])
 
 
 class TemplateValue(db.Model):
@@ -37,7 +50,7 @@ class TemplateValue(db.Model):
         :param string:
         :return:
         """
-        return Slugify(separator="_", to_lower=False)(string)
+        return create_slug(string, separator="_")
 
     @property
     def var_name(self):
@@ -102,7 +115,7 @@ class TemplateValueSet(db.Model):
         :param string:
         :return:
         """
-        return Slugify(separator="_", to_lower=False)(string)
+        return create_slug(string, separator="_")
 
     def copy_variables_from_config_template(self):
         """this function copies all variables from the associated configuration template object
@@ -112,6 +125,8 @@ class TemplateValueSet(db.Model):
         if not self.config_template:
             raise ValueError("Config Template not set within the template value set, copy variable names not possible")
 
+        # SQLAlchemy 2.0 no longer cascades the object into the session through the config_template backref
+        db.session.add(self)
         parent_vars = self.config_template.variables.all()
 
         # add hostname variable
@@ -247,7 +262,7 @@ class TemplateVariable(db.Model):
 
     @var_name.setter
     def var_name(self, value):
-        self.var_name_slug = Slugify(separator="_", to_lower=False)(value)
+        self.var_name_slug = create_slug(value, separator="_")
 
     def __init__(self, config_template, var_name, description=""):
         self.var_name = var_name
@@ -286,7 +301,7 @@ class ConfigTemplate(db.Model):
 
     @property
     def name_slug(self):
-        return Slugify(to_lower=False)(self.name)
+        return create_slug(self.name)
 
     @property
     def template_content(self):
@@ -324,7 +339,7 @@ class ConfigTemplate(db.Model):
         :param string:
         :return:
         """
-        return Slugify(separator="_", to_lower=False)(string)
+        return create_slug(string, separator="_")
 
     def _create_variables_from_template_content(self):
         dcg = MakoConfigGenerator(template_string=self.template_content)
@@ -458,7 +473,7 @@ class Project(db.Model):
 
     @property
     def name_slug(self):
-        return Slugify(to_lower=False)(self.name)
+        return create_slug(self.name)
 
     def __init__(self, name):
         self.name = name

@@ -80,23 +80,23 @@ third_value ${ var_3 }
         self.browser.get(self.get_server_url())
 
         # create the first project
-        self.browser.find_element_by_id("create_project").click()
-        self.browser.find_element_by_id("name").send_keys(test_project_name)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "create_project").click()
+        self.browser.find_element(By.ID, "name").send_keys(test_project_name)
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify that the creation was successful
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(test_project_name, content)
         self.assertIn("Project <strong>%s</strong> successful created" % test_project_name, self.browser.page_source)
 
         # create a new configuration template
-        self.browser.find_element_by_id("create_config_templates").click()
-        self.browser.find_element_by_id("name").send_keys(test_config_template_name)
-        self.browser.find_element_by_id("template_content").send_keys(test_config_template_content)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "create_config_templates").click()
+        self.browser.find_element(By.ID, "name").send_keys(test_config_template_name)
+        self.browser.find_element(By.ID, "template_content").send_keys(test_config_template_content)
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify configuration template detail view
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(test_config_template_name, content)
         self.assertIn(test_config_template_content, content)
         self.assertIn("var_1", content)
@@ -104,17 +104,17 @@ third_value ${ var_3 }
         self.assertIn("var_3", content)
 
         # add new configuration template value set
-        self.browser.find_element_by_link_text("Create the first Template Value Set.").click()
-        self.browser.find_element_by_id("hostname").send_keys(test_tvs1_hostname)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.LINK_TEXT, "Create the first Template Value Set.").click()
+        self.browser.find_element(By.ID, "hostname").send_keys(test_tvs1_hostname)
+        self.browser.find_element(By.ID, "submit").click()
         self.assertIn("Template Value Set successful created", self.browser.page_source)
 
         # go back to the Config Template overview
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # view the Template Value Set details
-        self.browser.find_element_by_link_text(test_tvs1_hostname).click()
-        content = self.browser.find_element_by_tag_name("body").text
+        self.browser.find_element(By.LINK_TEXT, test_tvs1_hostname).click()
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(test_tvs1_hostname, content)
         self.assertIn("hostname %s" % test_tvs1_hostname, content)
         self.assertIn("var_1", content)
@@ -122,61 +122,61 @@ third_value ${ var_3 }
         self.assertIn("var_3", content)
 
         # update a value of a variable
-        self.browser.find_element_by_id("edit_template_value_set").click()
-        self.browser.find_element_by_id("edit_var_1").send_keys(test_var_1_value)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "edit_template_value_set").click()
+        self.browser.find_element(By.ID, "edit_var_1").send_keys(test_var_1_value)
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify result of the first configuration template value set in the detail view
         self.assertIn("Template Value Set successful saved", self.browser.page_source)
-        self.browser.find_element_by_link_text(test_tvs1_hostname).click()
+        self.browser.find_element(By.LINK_TEXT, test_tvs1_hostname).click()
 
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("var_1 " + test_var_1_value, content)
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # go back to config template overview
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(test_config_template_name, content)
         self.assertIn("name var_1 var_2 var_3", content)
         self.assertIn(test_var_1_value, content)
 
         # add new configuration template value set
-        self.browser.find_element_by_id("create_template_value_set").click()
-        self.browser.find_element_by_id("hostname").send_keys(test_tvs2_hostname)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "create_template_value_set").click()
+        self.browser.find_element(By.ID, "hostname").send_keys(test_tvs2_hostname)
+        self.browser.find_element(By.ID, "submit").click()
         self.assertIn("Template Value Set successful created", self.browser.page_source)
 
         # go back to the Config Template overview
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # verify result of the second configuration template value set in the detail view
         time.sleep(1)
-        self.browser.find_element_by_link_text(test_tvs2_hostname).click()
-        content = self.browser.find_element_by_tag_name("body").text
+        self.browser.find_element(By.LINK_TEXT, test_tvs2_hostname).click()
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("hostname %s" % test_tvs2_hostname, content)
         self.assertIn("var_1", content)
         self.assertIn("var_2", content)
         self.assertIn("var_3", content)
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # add a description to the second variable
         new_description = "description for the second variable"
-        self.browser.find_element_by_id("edit_variable_var_1").click()
-        self.browser.find_element_by_id("description").send_keys(new_description)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "edit_variable_var_1").click()
+        self.browser.find_element(By.ID, "description").send_keys(new_description)
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify result on the config template overview
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(new_description, content)
 
         # view the configuration of the first device
-        self.browser.find_element_by_id("view_config_1").click()
-        content = self.browser.find_element_by_tag_name("body").text
+        self.browser.find_element(By.ID, "view_config_1").click()
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(first_config_content, content)
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # download the configuration of the first device
-        self.browser.find_element_by_id("download_config_1").click()
+        self.browser.find_element(By.ID, "download_config_1").click()
 
         # wait for download complete
         time.sleep(2)
@@ -194,7 +194,7 @@ third_value ${ var_3 }
         os.remove(expected_file)
 
         # download all configs and verify file
-        self.browser.find_element_by_id("download_all_configurations").click()
+        self.browser.find_element(By.ID, "download_all_configurations").click()
         time.sleep(1)
         expected_file = os.path.join(self.download_dir, test_config_template_name + "_configs.zip")
 
@@ -203,10 +203,10 @@ third_value ${ var_3 }
         os.remove(expected_file)
 
         # test export configurations view
-        self.browser.find_element_by_id("export_configurations").click()
+        self.browser.find_element(By.ID, "export_configurations").click()
 
         # download all configs and verify file
-        self.browser.find_element_by_id("download_all_configurations").click()
+        self.browser.find_element(By.ID, "download_all_configurations").click()
         time.sleep(1)
         expected_file = os.path.join(self.download_dir, test_config_template_name + "_configs.zip")
 
@@ -215,71 +215,71 @@ third_value ${ var_3 }
         os.remove(expected_file)
 
         # test provide files on local FTP server
-        self.browser.find_element_by_id("refresh_ftp").click()
+        self.browser.find_element(By.ID, "refresh_ftp").click()
         time.sleep(5)
         current_url = self.browser.current_url
 
         self.browser.get(self.get_server_url() + "/ncg/debug/list_ftp_directory")
-        ftp_text = self.browser.find_element_by_tag_name("body").text
+        ftp_text = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("/sample-project/sample-configuration-template", ftp_text)
         self.assertIn("my-other-hostname", ftp_text)
 
         self.browser.get(current_url)
 
         # test provide files on local TFTP server
-        self.browser.find_element_by_id("refresh_tftp").click()
+        self.browser.find_element(By.ID, "refresh_tftp").click()
         time.sleep(5)
         current_url = self.browser.current_url
 
         self.browser.get(self.get_server_url() + "/ncg/debug/list_tftp_directory")
-        tftp_text = self.browser.find_element_by_tag_name("body").text
+        tftp_text = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("/sample-project/sample-configuration-template", tftp_text)
         self.assertIn("my-other-hostname", tftp_text)
 
         self.browser.get(current_url)
 
         # go back to the config template view
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # change the configuration script
-        self.browser.find_element_by_id("edit_template_value_set").click()
-        content = self.browser.find_element_by_tag_name("body").text
+        self.browser.find_element(By.ID, "edit_template_value_set").click()
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn('Edit "%s"' % test_config_template_name, content)
         self.assertIn(test_config_template_content, content)
         time.sleep(1)
-        self.browser.find_element_by_id("template_content").clear()
-        self.browser.find_element_by_id("template_content").send_keys(test_config_template_content_changed)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "template_content").clear()
+        self.browser.find_element(By.ID, "template_content").send_keys(test_config_template_content_changed)
+        self.browser.find_element(By.ID, "submit").click()
         time.sleep(1)
 
         # verify, that all template_value sets are deleted
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("There are no Template Value Sets defined.", content)
 
         # create the two value sets again
-        self.browser.find_element_by_id("create_template_value_set").click()
-        self.browser.find_element_by_id("hostname").send_keys(test_tvs1_hostname)
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "create_template_value_set").click()
+        self.browser.find_element(By.ID, "hostname").send_keys(test_tvs1_hostname)
+        self.browser.find_element(By.ID, "submit").click()
         self.assertIn("Template Value Set successful created", self.browser.page_source)
 
         # go back to the Config Template overview
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
-        self.browser.find_element_by_id("create_template_value_set").click()
-        self.browser.find_element_by_id("hostname").send_keys(test_tvs2_hostname)
-        self.browser.find_element_by_id("submit").click()
-        content = self.browser.find_element_by_tag_name("body").text
+        self.browser.find_element(By.ID, "create_template_value_set").click()
+        self.browser.find_element(By.ID, "hostname").send_keys(test_tvs2_hostname)
+        self.browser.find_element(By.ID, "submit").click()
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("Template Value Set successful created", content)
 
         # go back to the Config Template overview
-        self.browser.find_element_by_id("_back").click()
+        self.browser.find_element(By.ID, "_back").click()
 
         # manually remove the template value set
-        self.browser.find_element_by_id("delete_template_value_set_1").click()
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "delete_template_value_set_1").click()
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify content
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(
             "Config Template <strong>%s</strong> successful deleted" % test_tvs1_hostname,
             self.browser.page_source
@@ -287,11 +287,11 @@ third_value ${ var_3 }
         self.assertIn(test_tvs2_hostname, content)
 
         # delete the other template view
-        self.browser.find_element_by_id("delete_template_value_set_2").click()
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "delete_template_value_set_2").click()
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify results
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn(
             "Config Template <strong>%s</strong> successful deleted" % test_tvs2_hostname,
             self.browser.page_source
@@ -299,11 +299,11 @@ third_value ${ var_3 }
         self.assertIn("There are no Template Value Sets defined.", content)
 
         # go back to the overview and drop the project
-        self.browser.find_element_by_id("_back").click()
-        self.browser.find_element_by_id("_back").click()
-        self.browser.find_element_by_id("delete_project_1").click()
-        self.browser.find_element_by_id("submit").click()
+        self.browser.find_element(By.ID, "_back").click()
+        self.browser.find_element(By.ID, "_back").click()
+        self.browser.find_element(By.ID, "delete_project_1").click()
+        self.browser.find_element(By.ID, "submit").click()
 
         # verify that there are no projects in the database
-        content = self.browser.find_element_by_tag_name("body").text
+        content = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("No Projects found in database.", content)

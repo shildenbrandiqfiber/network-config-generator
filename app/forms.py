@@ -1,10 +1,10 @@
 """
 WTF forms for the web service
 """
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import ValidationError, StringField, TextAreaField
 from wtforms.validators import DataRequired
-from wtforms.ext.sqlalchemy.orm import model_form
+from wtforms_sqlalchemy.orm import model_form
 from app import db
 from app.models import Project, TemplateValueSet, TemplateVariable
 from app.utils import MakoConfigGenerator
@@ -47,18 +47,18 @@ def verify_template_syntax(form, field):
         raise ValidationError("Invalid template, please correct the following error: %s" % str(ex))
 
 
-class ConfigTemplateForm(Form):
+class ConfigTemplateForm(FlaskForm):
     name = StringField("name", validators=[DataRequired()])
     template_content = TextAreaField("template content", validators=[verify_template_syntax])
 
 
-class EditConfigTemplateValuesForm(Form):
+class EditConfigTemplateValuesForm(FlaskForm):
     csv_content = TextAreaField("Template Value Sets")
 
 
 ProjectForm = model_form(
     Project,
-    base_class=Form,
+    base_class=FlaskForm,
     db_session=db.session,
     exclude_fk=True
 )
@@ -66,7 +66,7 @@ ProjectForm = model_form(
 
 TemplateValueSetForm = model_form(
     TemplateValueSet,
-    base_class=Form,
+    base_class=FlaskForm,
     db_session=db.session,
     exclude_fk=True,
     exclude=['config_template']
@@ -74,7 +74,7 @@ TemplateValueSetForm = model_form(
 
 TemplateVariableForm = model_form(
     TemplateVariable,
-    base_class=Form,
+    base_class=FlaskForm,
     db_session=db.session,
     exclude_fk=True,
     field_args={

@@ -18,14 +18,13 @@ select result in Yes No
 do
     case ${result} in
         "Yes" )
-            extra_vars+=" use_systemd=true configure_local_services=true"
+            extra_vars+=" configure_local_services=true"
 
             echo "---------------------------------"
             echo "Install Ansible and other dependencies..."
             echo "---------------------------------"
-            sudo apt-get install python-dev python3-dev -y
             sudo apt-get update
-            sudo pip install ansible markupsafe
+            sudo apt-get install ansible -y
 
             echo "---------------------------------"
             echo "create Network Configuration Generator user..."

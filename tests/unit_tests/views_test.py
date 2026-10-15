@@ -7,7 +7,6 @@ import shutil
 
 import time
 from flask import url_for
-from slugify.main import Slugify
 
 from app import db, app
 from app.models import Project, ConfigTemplate, TemplateValueSet, TemplateVariable
@@ -22,7 +21,7 @@ class CommonSiteTest(BaseFlaskTest):
         :return:
         """
         response = self.client.get("/")
-        self.assertEqual(response.headers['Location'], "http://localhost%s" % url_for("home"))
+        self.assertEqual(response.headers['Location'], url_for("home"))
         self.assertEqual(response.status_code, 302)
 
     def test_homepage_is_available(self):
@@ -466,8 +465,8 @@ nothing (there is the error)
         self.assertIn("Config Template name already in use, please use another one", response.data.decode("utf-8"))
 
         ct1 = ConfigTemplate.query.filter(
-                (Project.id == p.id) and
-                (ConfigTemplate.name == ct_name)
+                ConfigTemplate.project_id == p.id,
+                ConfigTemplate.name == ct_name
         ).first()
 
         self.assertIsNotNone(ct1, "Config Template not found in database")
@@ -1275,8 +1274,8 @@ class TemplateValueSetViewTest(BaseFlaskTest):
         self.assertTrue(len(TemplateValueSet.query.all()) == 2)
 
         tvs1 = TemplateValueSet.query.filter(
-                (ConfigTemplate.id == ct.id) and
-                (TemplateValueSet.hostname == tvs_name)
+                TemplateValueSet.config_template_id == ct.id,
+                TemplateValueSet.hostname == tvs_name
         ).first()
 
         self.assertIsNotNone(tvs1, "Template value set not found in database")
@@ -1603,8 +1602,8 @@ class CeleryTaskTest(BaseFlaskTest):
 
         # verify result on disk
         base_path = os.path.join(app.config["FTP_DIRECTORY"],
-                                 Slugify(separator="_", to_lower=False)(ct.project.name),
-                                 Slugify(separator="_", to_lower=False)(ct.name))
+                                 ct.project.name_slug,
+                                 ct.name_slug)
 
         self.assertTrue(os.path.exists(base_path), base_path)
         self.assertTrue(os.path.isdir(base_path), base_path)
@@ -1614,7 +1613,7 @@ class CeleryTaskTest(BaseFlaskTest):
             self.assertTrue(os.path.isfile(os.path.join(base_path, exp_file)))
 
         # cleanup
-        shutil.rmtree(os.path.join(app.config["FTP_DIRECTORY"], Slugify(to_lower=False, separator="_")(ct.project.name)))
+        shutil.rmtree(os.path.join(app.config["FTP_DIRECTORY"], ct.project.name_slug))
 
     def test_update_local_tftp_config_task(self):
         """
@@ -1651,8 +1650,8 @@ class CeleryTaskTest(BaseFlaskTest):
 
         # verify result on disk
         base_path = os.path.join(app.config["TFTP_DIRECTORY"],
-                                 Slugify(separator="_", safe_chars="-", to_lower=False)(ct.project.name),
-                                 Slugify(separator="_", safe_chars="-", to_lower=False)(ct.name))
+                                 ct.project.name_slug,
+                                 ct.name_slug)
         self.assertTrue(os.path.exists(base_path), base_path)
         self.assertTrue(os.path.isdir(base_path), base_path)
         for tvs in ct.template_value_sets:
@@ -1662,4 +1661,4 @@ class CeleryTaskTest(BaseFlaskTest):
 
         # cleanup
         shutil.rmtree(os.path.join(app.config["TFTP_DIRECTORY"],
-                                   Slugify(separator="_", to_lower=False)(ct.project.name)))
+                                   ct.project.name_slug))

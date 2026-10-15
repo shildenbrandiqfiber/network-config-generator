@@ -2,7 +2,7 @@
 views for the Template Variable data object
 """
 import logging
-from flask import render_template, url_for, redirect, request, flash, abort
+from flask import render_template, url_for, redirect, flash, abort
 from sqlalchemy.exc import IntegrityError
 from app import app, db
 from app.models import ConfigTemplate, TemplateVariable
@@ -29,7 +29,7 @@ def edit_template_variable(config_template_id, template_variable_id):
 
     old_var_name = template_variable.var_name
 
-    form = TemplateVariableForm(request.form, template_variable)
+    form = TemplateVariableForm(obj=template_variable)
 
     if form.validate_on_submit():
         try:

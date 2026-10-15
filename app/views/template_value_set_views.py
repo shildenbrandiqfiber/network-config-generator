@@ -37,7 +37,7 @@ def add_template_value_set(config_template_id):
     :return:
     """
     parent_config_template = ConfigTemplate.query.filter(ConfigTemplate.id == config_template_id).first_or_404()
-    form = TemplateValueSetForm(request.form)
+    form = TemplateValueSetForm()
 
     if form.validate_on_submit():
         try:
@@ -95,7 +95,7 @@ def edit_template_value_set(config_template_id, template_value_set_id):
     parent_config_template = ConfigTemplate.query.filter(ConfigTemplate.id == config_template_id).first_or_404()
     template_value_set = TemplateValueSet.query.filter(TemplateValueSet.id == template_value_set_id).first_or_404()
 
-    form = TemplateValueSetForm(request.form, template_value_set)
+    form = TemplateValueSetForm(obj=template_value_set)
 
     if form.validate_on_submit():
         try:

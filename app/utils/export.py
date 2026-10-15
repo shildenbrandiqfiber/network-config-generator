@@ -22,7 +22,7 @@ def get_appliance_ftp_password():
         return pwd
 
     except:
-        logger.error("FTP password not set", exec_info=True)
+        logger.error("FTP password not set", exc_info=True)
         return "(not defined)"
 
 

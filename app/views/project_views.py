@@ -40,7 +40,7 @@ def add_project():
 
     :return:
     """
-    form = ProjectForm(request.form)
+    form = ProjectForm()
 
     if form.validate_on_submit():
         try:
@@ -81,9 +81,9 @@ def edit_project(project_id):
     :param project_id:
     :return:
     """
-    project = Project.query.get(project_id)
+    project = Project.query.filter(Project.id == project_id).first_or_404()
 
-    form = ProjectForm(request.form, project)
+    form = ProjectForm(obj=project)
 
     if form.validate_on_submit():
         try:

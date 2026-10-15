@@ -1,9 +1,10 @@
 import logging
 import os
-from celery import Celery
+from celery import Celery, Task
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from werkzeug.contrib.fixers import ProxyFix
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 from config import STATIC_URL_PATH
 
 # configure logging
@@ -38,9 +39,21 @@ logging.getLogger().info("use %s configuration" % config_class)
 app = Flask(__name__, static_url_path=STATIC_URL_PATH)
 app.config.from_object(config_class)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+
+class FlaskTask(Task):
+    """
+    celery task that runs within the Flask application context (required for database access)
+    """
+    def __call__(self, *args, **kwargs):
+        with app.app_context():
+            return self.run(*args, **kwargs)
+
+
 # setup the celery client
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+celery = Celery(app.name, task_cls=FlaskTask)
+celery.conf.update(app.config["CELERY"])
 
 if app.config.get("SECRET_KEY") == "":
     logging.getLogger().error("Secret key not set!")

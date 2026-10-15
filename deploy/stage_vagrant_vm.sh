@@ -3,7 +3,6 @@ echo ""
 echo "VAGRANT UBUNTU SETUP"
 echo ""
 echo "install Ansible on the VM"
-sudo apt-add-repository ppa:ansible/ansible -y
 sudo apt-get update
 sudo apt-get install ansible -y
 

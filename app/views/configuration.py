@@ -80,4 +80,4 @@ def download_all_config_as_zip(project_id, config_template_id):
             zf.writestr(data, values.get_configuration_result())
     memory_file.seek(0)
 
-    return send_file(memory_file, attachment_filename=config_template.name + "_configs.zip", as_attachment=True)
+    return send_file(memory_file, download_name=config_template.name + "_configs.zip", as_attachment=True)

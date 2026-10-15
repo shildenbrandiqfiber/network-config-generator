@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "-------------------------------------------------------------------------------------------------"
-echo " Network Configuration Generator - Ubuntu 14.04"
+echo " Network Configuration Generator - Ubuntu 22.04"
 echo "-------------------------------------------------------------------------------------------------"
 echo ""
 echo "This script stages the \"Network Configuration Generator\" Web service on the host. It installs"
@@ -19,19 +19,6 @@ do
     case ${result} in
         "Yes" )
             extra_vars=""
-            echo "Do you want to use systemd? (only with Ubuntu > 14.04)"
-            select sub_result in Yes No
-            do
-                case ${sub_result} in
-                    "Yes" )
-                        extra_vars+=" use_systemd=true"
-                        break
-                        ;;
-                    *)
-                        break
-                        ;;
-                esac
-            done
 
             echo "---------------------------------"
             echo "Do you want to configure the local services (FTP/TFTP)?"
@@ -52,7 +39,6 @@ do
             echo "---------------------------------"
             echo "Install Ansible..."
             echo "---------------------------------"
-            sudo apt-add-repository ppa:ansible/ansible -y
             sudo apt-get update
             sudo apt-get install ansible -y
 
@@ -77,7 +63,7 @@ do
             echo "---------------------------------"
             cd ${source_dir}
 
-            ansible-playbook -i 'localhost,' -c local deploy/setup.yaml --ask-sudo-pass --extra-vars "${extra_vars}"
+            ansible-playbook -i 'localhost,' -c local deploy/setup.yaml --ask-become-pass --extra-vars "${extra_vars}"
 
             echo "---------------------------------"
             echo "Setup complete."

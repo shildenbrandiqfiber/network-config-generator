@@ -1,2 +1,2 @@
-Flask-Testing==0.4.2
-selenium==2.48.0
+Flask-Testing==0.8.1
+selenium==4.51.0
